@@ -158,7 +158,6 @@ const getUserByEmail = async (req, res) => {
         res.status(500).json({ message: "Internal server error", success: false });
     }
 };
-// Update user by email - Mettre à jour un utilisateur par son email
 const updateUserByEmail = async (req, res) => {
     try {
         const { name, role, image } = req.body;
