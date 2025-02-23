@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const UserModel = require("../Models/User");
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const mongoose = require('mongoose');
 
 // Signup - Enregistrement d'un utilisateur avec image en base64
 const signup = async (req, res) => {
@@ -184,6 +185,111 @@ const updateUserByEmail = async (req, res) => {
 };
 
 
+// Add a new address for a user
+const addAddress = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const newAddress = req.body;
+
+        // Validate input
+        if (!newAddress.street || !newAddress.postalCode || !newAddress.city || !newAddress.country) {
+            return res.status(400).json({ message: 'Required fields are missing', success: false });
+        }
+
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found", success: false });
+        }
+
+        user.addresses.push(newAddress);
+        await user.save();
+
+        res.status(201).json({ message: "Address added successfully", success: true, user });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error", success: false });
+    }
+};
+
+// get addresses for a user
+const getUserAddresses = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        // Validate userId format
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid user ID", success: false });
+        }
+
+        // Fetch user and their addresses
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found", success: false });
+        }
+
+        // Log the addresses for debugging
+        console.log("User addresses:", user.addresses);
+
+        // Return the addresses
+        res.status(200).json({ success: true, addresses: user.addresses });
+    } catch (err) {
+        console.error(err); // Log the error for debugging
+        res.status(500).json({ message: "Internal server error", success: false });
+    }
+};
+
+// Update an address for a user
+const updateAddress = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const addressId = req.params.addressId;
+        const updatedAddress = req.body;
+
+        // Validate input
+        if (!updatedAddress.street || !updatedAddress.postalCode || !updatedAddress.city || !updatedAddress.country) {
+            return res.status(400).json({ message: 'Required fields are missing', success: false });
+        }
+
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found", success: false });
+        }
+
+        const address = user.addresses.id(addressId);
+        if (!address) {
+            return res.status(404).json({ message: "Address not found", success: false });
+        }
+
+        address.set(updatedAddress);
+        await user.save();
+
+        res.status(200).json({ message: "Address updated successfully", success: true, user });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error", success: false });
+    }
+};
+
+// Delete an address for a user
+const deleteAddress = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const addressId = req.params.addressId;
+
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found", success: false });
+        }
+
+        user.addresses.pull(addressId);
+        await user.save();
+
+        res.status(200).json({ message: "Address deleted successfully", success: true, user });
+    } catch (err) {
+        res.status(500).json({ message: "Internal server error", success: false });
+    }
+};
+
 module.exports = {
     signup,
     login,
@@ -192,6 +298,10 @@ module.exports = {
     deleteUserById,
     updateUserById,
     getUserByName,
-    getUserByEmail, 
-    updateUserByEmail
+    getUserByEmail,
+    updateUserByEmail,
+    addAddress,
+    updateAddress,
+    deleteAddress ,
+    getUserAddresses
 };
