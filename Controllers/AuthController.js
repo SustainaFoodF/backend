@@ -25,7 +25,7 @@ const signup = async (req, res) => {
             role,
             image // L'image est déjà en Base64 côté frontend
         });
-
+ 
         await newUser.save();
 
         res.status(201).json({ message: "Signup successful", success: true });
