@@ -81,6 +81,10 @@ router.get('/users', getAllUsers);
 router.get('/users/name/:name', getUserByName); // This is where the new route is added
 router.get('/user/email/:email',getUserByEmail);
 router.put('/user/email/:email',updateUserByEmail);
+router.post("/users/:userId/addresses", addAddress);
+router.get("/users/:userId/addresses", getUserAddresses);
+router.put("/users/:userId/address/:addressId", updateAddress);
+router.delete("/users/:userId/address/:addressId", deleteAddress);
 
 
 /**
