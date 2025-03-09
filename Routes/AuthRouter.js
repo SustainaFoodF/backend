@@ -18,8 +18,8 @@ const {
   addAddress,
   getUserAddresses,
   updateAddress,
-  deleteAddress,
-  //changePassword
+  deleteAddress,changePasswordById,
+  changePasswordByEmail
 } = require("../Controllers/AuthController");
 const nodemailer = require("nodemailer");
 
@@ -47,7 +47,8 @@ router.post("/forgot-password", forgotPassword);
 router.post("/enable-2fa", enable2FA);
 
 //
-//router.post("/change-password", changePassword); // Utiliser la fonction du contrôleur
+router.post("/users/:id/change-password", changePasswordById);
+router.post("/users/change-password/:email", changePasswordByEmail);
 
 
 router.get("/confirm_user/:activationCode", async (req, res) => {

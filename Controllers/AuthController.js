@@ -392,3 +392,123 @@ exports.deleteAddress = async (req, res) => {
     res.status(500).json({ message: "Internal server error", success: false });
   }
 };
+exports.changePasswordById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    // Vérifier si l'utilisateur existe
+    const user = await UserModel.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    // Vérifier si l'ancien mot de passe est correct
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Ancien mot de passe incorrect" });
+    }
+
+    // Vérifier si le nouveau mot de passe et la confirmation correspondent
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Les mots de passe ne correspondent pas" });
+    }
+
+    // Vérifier la complexité du mot de passe (optionnel)
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: "Le mot de passe doit contenir au moins 6 caractères" });
+    }
+
+    // Hacher le nouveau mot de passe
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+
+    // Sauvegarder l'utilisateur avec le nouveau mot de passe
+    await user.save();
+
+    res.status(200).json({ message: "Mot de passe mis à jour avec succès" });
+  } catch (error) {
+    console.error("Erreur lors du changement de mot de passe:", error);
+    res.status(500).json({ message: "Erreur interne du serveur" });
+  }
+};exports.changePasswordById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    // Vérifier si l'utilisateur existe
+    const user = await UserModel.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    // Vérifier si l'ancien mot de passe est correct
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Ancien mot de passe incorrect" });
+    }
+
+    // Vérifier si le nouveau mot de passe et la confirmation correspondent
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Les mots de passe ne correspondent pas" });
+    }
+
+    // Vérifier la complexité du mot de passe (optionnel)
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: "Le mot de passe doit contenir au moins 6 caractères" });
+    }
+
+    // Hacher le nouveau mot de passe
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+
+    // Sauvegarder l'utilisateur avec le nouveau mot de passe
+    await user.save();
+
+    res.status(200).json({ message: "Mot de passe mis à jour avec succès" });
+  } catch (error) {
+    console.error("Erreur lors du changement de mot de passe:", error);
+    res.status(500).json({ message: "Erreur interne du serveur" });
+  }
+};
+// 🔹 Changer le mot de passe par email
+exports.changePasswordByEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    // Vérifier si l'utilisateur existe
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    // Vérifier si l'ancien mot de passe est correct
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Ancien mot de passe incorrect" });
+    }
+
+    // Vérifier si le nouveau mot de passe et la confirmation correspondent
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Les mots de passe ne correspondent pas" });
+    }
+
+    // Vérifier la longueur du nouveau mot de passe
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: "Le mot de passe doit comporter au moins 8 caractères" });
+    }
+
+    // Hash du nouveau mot de passe
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Mettre à jour le mot de passe
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Mot de passe mis à jour avec succès" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erreur interne du serveur" });
+  }
+};
