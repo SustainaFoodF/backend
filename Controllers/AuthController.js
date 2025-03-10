@@ -377,6 +377,7 @@ exports.deleteAddress = async (req, res) => {
 
     const user = await UserModel.findById(userId);
     if (!user) {
+      console.log('User not found ');
       return res
         .status(404)
         .json({ message: "User not found", success: false });
