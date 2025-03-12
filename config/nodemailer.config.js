@@ -25,7 +25,7 @@ module.exports.sendConfirmationEmail = async (name, email, activationCode) => {
         <h1>Activation du compte</h1>
         <h2>Bonjour ${name}</h2>
         <p>Veuillez confirmer votre email en cliquant sur le lien suivant :</p>
-        <a href="http://localhost:3000/confirm/${activationCode}">Cliquez ici</a>
+        <a href="http://localhost:3001/confirm/${activationCode}">Cliquez ici</a>
       </div>`,
   };
 
@@ -47,7 +47,7 @@ module.exports.sendResetPasswordEmail = async (email, resetToken) => {
         <div>
           <h1>Réinitialisation du mot de passe</h1>
           <p>Réinitialisez votre mot de passe en cliquant sur le lien suivant :</p>
-          <a href="http://localhost:3000/resetpassword/${resetToken}">Cliquez ici</a>
+          <a href="http://localhost:3001/resetpassword/${resetToken}">Cliquez ici</a>
         </div>`,
   };
 

@@ -8,7 +8,10 @@ const UserModel = require("../Models/User");
 const nodemailer = require("nodemailer");
 const speakeasy = require("speakeasy");
 const QRCode = require("qrcode");
-const { sendConfirmationEmail, sendResetPasswordEmail } = require("../config/nodemailer.config");
+const {
+  sendConfirmationEmail,
+  sendResetPasswordEmail,
+} = require("../config/nodemailer.config");
 
 // Middleware global pour la gestion des erreurs
 const asyncHandler = (fn) => (req, res, next) => {
@@ -69,7 +72,9 @@ exports.enable2FA = asyncHandler(async (req, res) => {
 
   QRCode.toDataURL(secret.otpauth_url, (err, data_url) => {
     if (err) {
-      return res.status(500).json({ message: "Erreur lors de la génération du QR Code" });
+      return res
+        .status(500)
+        .json({ message: "Erreur lors de la génération du QR Code" });
     }
     res.json({ secret: secret.base32, qrCode: data_url });
   });
@@ -81,7 +86,9 @@ exports.verify2FA = asyncHandler(async (req, res) => {
   const user = await UserModel.findById(userId);
 
   if (!user || !user.twoFactorSecret) {
-    return res.status(400).json({ message: "2FA non activée pour cet utilisateur" });
+    return res
+      .status(400)
+      .json({ message: "2FA non activée pour cet utilisateur" });
   }
 
   const verified = speakeasy.totp.verify({
@@ -107,7 +114,14 @@ exports.signup = asyncHandler(async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const activationCode = [...Array(25)].map(() => "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random() * 62)]).join("");
+  const activationCode = [...Array(25)]
+    .map(
+      () =>
+        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"[
+          Math.floor(Math.random() * 62)
+        ]
+    )
+    .join("");
 
   const newUser = new UserModel({
     name,
@@ -119,9 +133,16 @@ exports.signup = asyncHandler(async (req, res) => {
   });
 
   const savedUser = await newUser.save();
-  await sendConfirmationEmail(savedUser.name, savedUser.email, savedUser.activationCode, password);
+  await sendConfirmationEmail(
+    savedUser.name,
+    savedUser.email,
+    savedUser.activationCode,
+    password
+  );
 
-  const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
 
   res.status(201).json({ user: savedUser, token });
 });
@@ -162,8 +183,6 @@ exports.login = async (req, res) => {
   }
 };
 
-
-
 // 🔹 Récupération de tous les utilisateurs
 exports.getAllUsers = asyncHandler(async (req, res) => {
   const users = await UserModel.find().select("-password");
@@ -191,7 +210,11 @@ exports.deleteUserById = asyncHandler(async (req, res) => {
 // 🔹 Mise à jour d'un utilisateur
 exports.updateUserById = asyncHandler(async (req, res) => {
   const { name, email, role, image } = req.body;
-  const user = await UserModel.findByIdAndUpdate(req.params.id, { name, email, role, image }, { new: true });
+  const user = await UserModel.findByIdAndUpdate(
+    req.params.id,
+    { name, email, role, image },
+    { new: true }
+  );
 
   if (!user) {
     return res.status(404).json({ message: "Utilisateur non trouvé" });
@@ -202,13 +225,14 @@ exports.updateUserById = asyncHandler(async (req, res) => {
 
 // 🔹 Récupération d'un utilisateur par son nom
 exports.getUserByName = asyncHandler(async (req, res) => {
-  const user = await UserModel.findOne({ name: req.params.name }).select("-password");
+  const user = await UserModel.findOne({ name: req.params.name }).select(
+    "-password"
+  );
   if (!user) {
     return res.status(404).json({ message: "Utilisateur non trouvé" });
   }
   res.status(200).json({ user });
 });
-
 
 // Get user by email - Récupérer un utilisateur par son email
 exports.getUserByEmail = async (req, res) => {
@@ -377,7 +401,7 @@ exports.deleteAddress = async (req, res) => {
 
     const user = await UserModel.findById(userId);
     if (!user) {
-      console.log('User not found ');
+      console.log("User not found ");
       return res
         .status(404)
         .json({ message: "User not found", success: false });
@@ -412,12 +436,16 @@ exports.changePasswordById = async (req, res) => {
 
     // Vérifier si le nouveau mot de passe et la confirmation correspondent
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: "Les mots de passe ne correspondent pas" });
+      return res
+        .status(400)
+        .json({ message: "Les mots de passe ne correspondent pas" });
     }
 
     // Vérifier la complexité du mot de passe (optionnel)
     if (newPassword.length < 6) {
-      return res.status(400).json({ message: "Le mot de passe doit contenir au moins 6 caractères" });
+      return res.status(400).json({
+        message: "Le mot de passe doit contenir au moins 6 caractères",
+      });
     }
 
     // Hacher le nouveau mot de passe
@@ -432,7 +460,8 @@ exports.changePasswordById = async (req, res) => {
     console.error("Erreur lors du changement de mot de passe:", error);
     res.status(500).json({ message: "Erreur interne du serveur" });
   }
-};exports.changePasswordById = async (req, res) => {
+};
+exports.changePasswordById = async (req, res) => {
   try {
     const { id } = req.params;
     const { oldPassword, newPassword, confirmPassword } = req.body;
@@ -451,12 +480,16 @@ exports.changePasswordById = async (req, res) => {
 
     // Vérifier si le nouveau mot de passe et la confirmation correspondent
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: "Les mots de passe ne correspondent pas" });
+      return res
+        .status(400)
+        .json({ message: "Les mots de passe ne correspondent pas" });
     }
 
     // Vérifier la complexité du mot de passe (optionnel)
     if (newPassword.length < 6) {
-      return res.status(400).json({ message: "Le mot de passe doit contenir au moins 6 caractères" });
+      return res.status(400).json({
+        message: "Le mot de passe doit contenir au moins 6 caractères",
+      });
     }
 
     // Hacher le nouveau mot de passe
@@ -492,12 +525,16 @@ exports.changePasswordByEmail = async (req, res) => {
 
     // Vérifier si le nouveau mot de passe et la confirmation correspondent
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: "Les mots de passe ne correspondent pas" });
+      return res
+        .status(400)
+        .json({ message: "Les mots de passe ne correspondent pas" });
     }
 
     // Vérifier la longueur du nouveau mot de passe
     if (newPassword.length < 8) {
-      return res.status(400).json({ message: "Le mot de passe doit comporter au moins 8 caractères" });
+      return res.status(400).json({
+        message: "Le mot de passe doit comporter au moins 8 caractères",
+      });
     }
 
     // Hash du nouveau mot de passe
@@ -511,5 +548,56 @@ exports.changePasswordByEmail = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Erreur interne du serveur" });
+  }
+};
+
+exports.tryToLoginWithGoogle = async (req, res) => {
+  const { user } = req;
+  if (!user) {
+    return res
+      .status(401)
+      .json({ message: "Erreur lors de la connexion avec Google" });
+  }
+  const email = user.emails[0].value;
+  const userFromDataBase = await UserModel.findOne({ email });
+  if (!userFromDataBase) {
+    return res.status(404).json({ message: "Utilisateur non trouvé" });
+  }
+  const token = jwt.sign(
+    { id: userFromDataBase._id, email: userFromDataBase.email },
+    process.env.JWT_SECRET,
+    { expiresIn: "24h" }
+  );
+  return res.redirect(`http://localhost:3001/login?token=${token}`);
+};
+exports.loginWithToken = async (req, res) => {
+  try {
+    // Récupérer le token depuis les paramètres de l'URL
+    const { token } = req.params;
+    if (!token) {
+      return res.status(401).json({ message: "Token non fourni" });
+    }
+
+    // Vérifier et décoder le token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Récupérer l'utilisateur depuis la base de données
+    const user = await UserModel.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    // Générer un nouveau token
+    const newToken = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    res.json({ token: newToken, user });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Erreur serveur", error: error.message });
   }
 };
