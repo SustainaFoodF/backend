@@ -15,6 +15,20 @@ pipeline {
                 }
             }
         }
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // Define the SonarQube scanner tool location
+                    def scannerHome = tool 'scanner'
+
+                    // Run SonarQube analysis with the configured environment
+                    withSonarQubeEnv('SonarQube') {  // Ensure the 'SonarQube' server is configured in Jenkins
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
+        }
+
         stage('Build application') {
             steps {
                 script {
