@@ -22,7 +22,7 @@ pipeline {
                     def scannerHome = tool 'scanner'
 
                     // Run SonarQube analysis with the configured environment
-                    withSonarQubeEnv('SonarQube') {  // Ensure the 'SonarQube' server is configured in Jenkins
+                    withSonarQubeEnv {  // Ensure the 'SonarQube' server is configured in Jenkins
                         sh "${scannerHome}/bin/sonar-scanner"
                     }
                 }
