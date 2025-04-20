@@ -16,6 +16,7 @@ const ProductRouter = require("./Routes/productRouter");
 const CommandRouter = require("./Routes/CommandRouter");
 const StatsRouter = require("./Routes/StatsRouter");
 const StripeRouter = require("./Routes/StripeRouter");
+const MessageRouter = require("./Routes/MessageRouter")
 
 const TaskRoutes = require("./Routes/taskRoutes");
 const NotificationRouter = require('./Routes/notificationRouter');
@@ -81,6 +82,7 @@ app.use("/command", CommandRouter);
 app.use("/stats", StatsRouter);
 app.use("/payment", StripeRouter);
 app.use('/livreur/tasks', TaskRoutes);
+app.use('/messages',MessageRouter);
 
 app.use('/notifications', NotificationRouter);
 
