@@ -32,6 +32,7 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "twilio": "^5.5.1",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "workbox-google-analytics": "^6.6.0"
   }
 }
