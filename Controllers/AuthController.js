@@ -601,3 +601,12 @@ exports.loginWithToken = async (req, res) => {
       .json({ message: "Erreur serveur", error: error.message });
   }
 };
+exports.getAllDeliverers = async (req, res) => {
+  try {
+    const deliverers = await UserModel.find({ role: "livreur" });
+    res.status(200).json(deliverers);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des livreurs :", error);
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
+  }
+};

@@ -5,10 +5,13 @@ const {
   loginWithToken,
   enable2FA,
   signup,
+  getAllDeliverers,
   login,
 } = require("../Controllers/AuthController");
 
 const User = require("../Models/User");
+
+
 
 const router = express.Router();
 
@@ -53,6 +56,8 @@ router.get("/confirm_user/:activationCode", async (req, res) => {
 });
 
 router.post("/signup", signup);
+// Route pour récupérer tous les livreurs
+router.get("/livreurs", getAllDeliverers);
 
 router.post("/login", login);
 router.post("/loginWithToken/:token", loginWithToken);

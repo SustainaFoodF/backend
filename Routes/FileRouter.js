@@ -1,5 +1,5 @@
 const express = require("express");
-const upload = require("../Middlewares/uploadMiddleware"); // Import the upload middleware
+const { upload } = require("../Middlewares/uploadMiddleware"); // Import the upload middleware
 const path = require("path");
 const router = express.Router();
 const fs = require("fs");

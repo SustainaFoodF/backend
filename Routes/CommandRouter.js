@@ -13,5 +13,7 @@ router.put(
 
 router.get("/", commandController.getAll);
 router.get("/me", ensureAuthenticated, commandController.getCommandsByUser);
+// Route pour affecter un livreur à une commande
+router.post('/assign', ensureAuthenticated, commandController.assignDeliverer); // Assurez-vous d'ajouter l'authentification ici
 
 module.exports = router;
