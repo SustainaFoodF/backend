@@ -21,6 +21,8 @@ const MessageRouter = require("./Routes/MessageRouter")
 const TaskRoutes = require("./Routes/taskRoutes");
 const NotificationRouter = require('./Routes/notificationRouter');
 
+const RecipeRouter = require("./Routes/RecipeRouter");
+
 const app = express();
 const PORT = process.env.PORT || 5001;
 const passport = require("passport");
@@ -85,6 +87,8 @@ app.use('/livreur/tasks', TaskRoutes);
 app.use('/messages',MessageRouter);
 
 app.use('/notifications', NotificationRouter);
+
+app.use("/recipe", RecipeRouter);
 
 // Configuration Swagger
 const swaggerOptions = {

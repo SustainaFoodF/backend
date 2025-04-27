@@ -1,6 +1,6 @@
 const express = require("express");
 
-const upload = require("../Middlewares/uploadMiddleware"); // Import the upload middleware
+const { upload, uploadMemory } = require("../Middlewares/uploadMiddleware"); // Import the upload middleware
 const router = express.Router();
 
 const {
@@ -10,6 +10,7 @@ const {
   updateProduct,
   deleteProduct,
   getProductsByCategory,
+  getRecipes,
 } = require("../Controllers/ProductController");
 const ensureAuthenticated = require("../Middlewares/Auth"); // Adjust path if necessary
 
@@ -22,6 +23,8 @@ router.post(
 );
 router.get("/byUser", ensureAuthenticated, getProductsByOwner);
 router.get("/byCategory/:categoryId", getProductsByCategory);
+router.post("/recipes", uploadMemory.array("images", 10), getRecipes);
+
 router.get("/:id", ensureAuthenticated, getProductById);
 router.put("/:id", ensureAuthenticated, upload.single("image"), updateProduct);
 router.delete("/:id", ensureAuthenticated, deleteProduct);
