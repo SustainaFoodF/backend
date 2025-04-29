@@ -1,5 +1,7 @@
 const CommandModel = require("../Models/Command");
+const User = require("../Models/User"); //
 const { updateProductQuantity } = require("../Services/productService");
+const { sendOrderConfirmationEmail } = require("../Services/emailService");
 
 exports.createCommand = async (req, res) => {
   try {
@@ -28,14 +30,30 @@ exports.createCommand = async (req, res) => {
       phoneNumber,
     });
     await command.save();
+
+    // 💌 ENVOI EMAIL AU CLIENT
+    const user = await User.findById(owner);
+    if (user && user.email) {
+      const orderDetails = {
+        items: products.map(p => ({
+          name: p.product.label,
+          quantity: p.quantity,
+          price: p.product.prix * p.quantity,
+        })),
+        total: totalPrice.toFixed(2),
+      };
+    
+      await sendOrderConfirmationEmail(user.email, orderDetails);
+    }
+    
+
     res.status(201).json(command);
   } catch (err) {
     console.log(err);
-    res
-      .status(500)
-      .json({ error: "Failed to create command", message: err.message });
+    res.status(500).json({ error: "Failed to create command", message: err.message });
   }
 };
+
 exports.assignDeliverer = async (req, res) => {
   try {
     const { commandId, delivererId } = req.body;
