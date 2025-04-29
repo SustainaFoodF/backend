@@ -1,5 +1,7 @@
 const CommandModel = require("../Models/Command");
+const User = require("../Models/User"); //
 const { updateProductQuantity } = require("../Services/productService");
+const { sendOrderConfirmationEmail } = require("../Services/emailService");
 
 exports.createCommand = async (req, res) => {
   try {
@@ -28,12 +30,54 @@ exports.createCommand = async (req, res) => {
       phoneNumber,
     });
     await command.save();
+
+    // 💌 ENVOI EMAIL AU CLIENT
+    const user = await User.findById(owner);
+    if (user && user.email) {
+      const orderDetails = {
+        items: products.map(p => ({
+          name: p.product.label,
+          quantity: p.quantity,
+          price: p.product.prix * p.quantity,
+        })),
+        total: totalPrice.toFixed(2),
+      };
+    
+      await sendOrderConfirmationEmail(user.email, orderDetails);
+    }
+    
+
     res.status(201).json(command);
   } catch (err) {
     console.log(err);
-    res
-      .status(500)
-      .json({ error: "Failed to create command", message: err.message });
+    res.status(500).json({ error: "Failed to create command", message: err.message });
+  }
+};
+
+exports.assignDeliverer = async (req, res) => {
+  try {
+    const { commandId, delivererId } = req.body;
+ 
+    // Vérifier que la commande existe
+    const command = await CommandModel.findById(commandId);
+    if (!command) {
+      return res.status(404).json({ message: "Commande non trouvée" });
+    }
+ 
+    // Vérifier que le livreur existe
+    const deliverer = await UserModel.findById(delivererId);
+    if (!deliverer || deliverer.role !== "livreur") {
+      return res.status(404).json({ message: "Livreur non trouvé" });
+    }
+ 
+    // Affecter le livreur à la commande
+    command.livreur = delivererId;
+    await command.save();
+ 
+    res.status(200).json({ message: "Livreur affecté avec succès", command });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Erreur lors de l'affectation du livreur", message: err.message });
   }
 };
 

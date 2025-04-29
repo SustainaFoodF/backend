@@ -8,6 +8,9 @@ module.exports.transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER, // Votre adresse email
     pass: process.env.EMAIL_PASS, // Votre mot de passe ou mot de passe d'application
   },
+  tls: {
+    rejectUnauthorized: false // <-- accepte les certificats auto-signés
+  }
 });
 //fonction te5ou 3 parametres
 module.exports.sendConfirmationEmail = async (name, email, activationCode) => {

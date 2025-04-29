@@ -6,6 +6,7 @@ const {
   enable2FA,
   signup,
   login,
+  getAllDeliverers,
 } = require("../Controllers/AuthController");
 
 const User = require("../Models/User");
@@ -21,6 +22,8 @@ const logger = (req, res, next) => {
 // Use logger middleware
 router.use(logger);
 router.post("/reset-password/:token", resetPassword);
+// Route pour récupérer tous les livreurs
+router.get("/livreurs", getAllDeliverers);
 
 router.post("/forgot-password", forgotPassword);
 

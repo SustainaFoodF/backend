@@ -14,4 +14,7 @@ router.put(
 router.get("/", commandController.getAll);
 router.get("/me", ensureAuthenticated, commandController.getCommandsByUser);
 
+router.post('/assign', ensureAuthenticated, commandController.assignDeliverer); // Assurez-vous d'ajouter l'authentification ici
+
+
 module.exports = router;

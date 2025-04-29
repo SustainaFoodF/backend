@@ -44,6 +44,12 @@ const CommandSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    // 🔴 Nouveau champ ajouté ici :
+    livreur: {
+      type: Schema.Types.ObjectId,
+      ref: "User", // vérifie le nom exact de ton modèle
+      default: null,
+    },
   },
   { timestamps: true }
 );
