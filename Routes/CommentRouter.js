@@ -5,7 +5,7 @@ const ensureAuthenticated = require("../Middlewares/Auth"); // Adjust path if ne
 
 // Route to create a post
 router.post("/create", ensureAuthenticated, commentController.createComment);
-
+router.post("/addResponse", ensureAuthenticated, commentController.addResponse);
 router.put("/", ensureAuthenticated, commentController.updateComment); // pass commentId and postId on req.body
 
 router.put(

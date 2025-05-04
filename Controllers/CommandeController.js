@@ -138,7 +138,11 @@ exports.getCommandsByUser = async (req, res) => {
         .filter((command) =>
           command.products.some(
             (product) =>
-              product.product.owner._id.toString() === user._id.toString()
+              //product.product.owner._id.toString() === user._id.toString()
+            product.product &&
+product.product.owner &&
+product.product.owner._id.toString() === user._id.toString()
+
           )
         )
         .map((command) => ({

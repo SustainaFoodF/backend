@@ -29,7 +29,14 @@ const PostSchema = new Schema(
         {
           value: String,
           owner: { type: Schema.Types.ObjectId, ref: "users" },
-          createdAt: { type: Date, default: Date.now }, // Explicitly defining createdAt
+          createdAt: { type: Date, default: Date.now },
+          responses: [
+            {
+              value: String,
+              owner: { type: Schema.Types.ObjectId, ref: "users" },
+              createdAt: { type: Date, default: Date.now },
+            },
+          ],
         },
       ],
       default: [],

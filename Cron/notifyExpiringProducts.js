@@ -3,7 +3,7 @@ const dayjs = require("dayjs");
 const twilio = require("twilio");
 const client = twilio(
   "AC9ae271d1346a07fea01a424b990dbbcf",
-  "24b43db42543f2b5a88298dc1c968bf2"
+  "bbf10dbaf22b155e57165b479f85350e"
 );
 const { getAllExpiredProducts } = require("../Services/productService");
 
@@ -13,12 +13,12 @@ cron.schedule("* * * * *", async () => {
   try {
     const now = dayjs();
     const inOneMonth = now.add(1, "month");
-
     const expiringProducts = await getAllExpiredProducts(inOneMonth, now);
     console.log(expiringProducts);
     let message = "⏳ Reminder:";
     let i = 0;
-    /*for (const product of expiringProducts) {
+    /*
+    for (const product of expiringProducts) {
       if (i < 2) {
         message = ` Your product "${
           product.label
@@ -32,8 +32,8 @@ cron.schedule("* * * * *", async () => {
         });
         i++;
       }
-    }
-*/
+    }*/
+
     console.log(message);
 
     console.log("✅ Notification job completed.");

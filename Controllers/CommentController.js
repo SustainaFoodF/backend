@@ -13,7 +13,22 @@ exports.createComment = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
+exports.addResponse = async (req, res) => {
+  try {
+    const { commentId, value, postId } = req.body;
+    console.log(commentId);
+    const owner = req.user._id;
+    const newResponse = await commentService.addResponse(
+      postId,
+      commentId,
+      value,
+      owner
+    );
+    res.status(201).json(newResponse);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 exports.updateComment = async (req, res) => {
   try {
     const { postId, commentId, value } = req.body;
