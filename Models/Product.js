@@ -8,6 +8,7 @@ const ProductSchema = new Schema(
       required: true,
       trim: true,
     },
+    oldPrice: { type: Number },
     description: {
       type: String,
       required: false,
@@ -32,6 +33,10 @@ const ProductSchema = new Schema(
     },
     image: {
       type: String,
+    },
+    isPromo: {
+      type: Boolean,
+      default: false, // Par défaut, le produit n'est pas en promotion
     },
   },
   { timestamps: true }

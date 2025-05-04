@@ -11,6 +11,7 @@ const {
   deleteProduct,
   getProductsByCategory,
   getRecipes,
+  getPromoProducts,
 } = require("../Controllers/ProductController");
 const ensureAuthenticated = require("../Middlewares/Auth"); // Adjust path if necessary
 
@@ -28,5 +29,7 @@ router.post("/recipes", uploadMemory.array("images", 10), getRecipes);
 router.get("/:id", ensureAuthenticated, getProductById);
 router.put("/:id", ensureAuthenticated, upload.single("image"), updateProduct);
 router.delete("/:id", ensureAuthenticated, deleteProduct);
+// Route pour obtenir les produits en promotion
+router.get("/promo-products", getPromoProducts);
 
 module.exports = router;

@@ -47,6 +47,7 @@ const UserSchema = new Schema({
     default:null
   }
   
+  
 });
 
 const UserModel = mongoose.models.users || mongoose.model("users", UserSchema);

@@ -67,6 +67,26 @@ exports.getProductById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+// Contrôleur pour récupérer les produits en promotion et non expirés
+exports.getPromoProducts = async (req, res) => {
+  try {
+    const today = new Date();
+
+    // Rechercher les produits en promotion dont la date d'expiration est encore valide
+    const promoProducts = await Product.find({
+      isPromo: true,
+      dateExp: { $gte: today }, // Produits non expirés
+    });
+
+    // Retourner les produits trouvés
+    res.status(200).json(promoProducts);
+  } catch (error) {
+    console.error("Erreur dans getPromoProducts :", error);
+    res.status(500).json({
+      message: "Erreur lors de la récupération des produits en promotion.",
+    });
+  }
+};
 
 // Update a product (only if owned by user)
 exports.updateProduct = async (req, res) => {
