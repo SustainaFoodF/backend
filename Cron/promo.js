@@ -6,44 +6,49 @@ const { sendPromoEmail } = require("../config/nodemailer.config");
 const applyPromoIfExpiring = async () => {
   try {
     const today = new Date();
+    today.setHours(0, 0, 0, 0); // Réinitialiser l'heure pour comparaison précise
     const products = await Product.find();
 
+    // Trouver les produits expirant dans exactement 5 jours
     const productsExpiringSoon = products.filter((product) => {
       const expirationDate = new Date(product.dateExp);
+      expirationDate.setHours(0, 0, 0, 0);
       const timeDifference = expirationDate - today;
-      const daysLeft = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-      return daysLeft === 5; // Produits expirant dans 5 jours
+      const daysLeft = timeDifference / (1000 * 60 * 60 * 24);
+      return daysLeft === 5;
     });
 
     console.log(
       `🔍 ${productsExpiringSoon.length} produit(s) expirent dans 5 jours.`
     );
 
-    // Appliquer la promo
+    // Appliquer la promotion aux produits
     for (let product of productsExpiringSoon) {
-      const oldPrice = product.prix; // Enregistre le prix actuel
-      const newPrice = parseFloat((oldPrice * 0.8).toFixed(2)); // Réduction de 20%
-
       if (!product.isPromo) {
-        product.oldPrice = oldPrice; // Enregistre l'ancien prix
-        product.prix = newPrice; // Met à jour le prix réduit
-        product.isPromo = true; // Marque le produit comme étant en promo
+        const originalPrice = product.prix; // Prix original
+        const reducedPrice = parseFloat((originalPrice * 0.8).toFixed(2)); // Réduction de 20%
+
+        product.nouveauPrix = reducedPrice; // Stocker le nouveau prix
+        product.isPromo = true; // Marque le produit comme étant en promotion
+
         await product.save(); // Sauvegarde dans la base de données
         console.log(
-          `💸 Promo appliquée à "${product.label}" : Ancien prix = ${oldPrice}, Nouveau prix = ${newPrice}`
+          `💸 Promo appliquée à "${product.label}" : Prix original = ${originalPrice}, Nouveau prix = ${reducedPrice}`
         );
       }
     }
 
-    // Envoyer des emails aux clients
+    // Trouver les clients
     const clients = await User.find({ role: "client" });
 
     let totalEmailsSent = 0;
 
+    // Envoyer des emails de promotion
     for (let client of clients) {
       let updated = false;
 
       for (let product of productsExpiringSoon) {
+        // Vérifier si un email a déjà été envoyé pour ce produit
         const alreadySent = client.promotionsSent?.some(
           (promo) => promo.productId.toString() === product._id.toString()
         );
@@ -52,8 +57,9 @@ const applyPromoIfExpiring = async () => {
           console.log(
             `📧 Envoi d’un email à ${client.email} pour "${product.label}"`
           );
-          await sendPromoEmail(client.email, product);
+          await sendPromoEmail(client.email, product); // Envoyer l'email
 
+          // Ajouter le produit à la liste des promotions envoyées
           client.promotionsSent = client.promotionsSent || [];
           client.promotionsSent.push({
             productId: product._id,
@@ -68,6 +74,7 @@ const applyPromoIfExpiring = async () => {
         }
       }
 
+      // Sauvegarder les modifications dans les données du client
       if (updated) {
         await client.save();
         console.log(`💾 Données client ${client.email} mises à jour.`);
