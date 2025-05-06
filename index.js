@@ -4,6 +4,7 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const swaggerJsDoc = require("swagger-jsdoc");
+const deleteExpiredProductsCron = require("./Cron/cron_deleteExpiredProducts");
 const swaggerUi = require("swagger-ui-express");
 const FileRouter = require("./Routes/FileRouter");
 const AuthRouter = require("./Routes/AuthRouter");
@@ -26,6 +27,9 @@ const NotificationRouter = require('./Routes/notificationRouter');
 
 const RecipeRouter = require("./Routes/RecipeRouter");
 
+
+const { getUsers, getUserByEmail ,registerUserFace } = require('./Routes/FaceRecologin');
+
 const app = express();
 const PORT = process.env.PORT || 5001;
 const passport = require("passport");
@@ -33,6 +37,9 @@ const session = require("express-session");
 const jwt = require("jsonwebtoken");
 const { tryToLoginWithGoogle } = require("./Controllers/AuthController");
 require("./Cron/notifyExpiringProducts");
+require('./Cron/promo');
+// Lancer le cron pour les produits expirés
+deleteExpiredProductsCron();
 
 require("./config/passeportConfig"); // Google OAuth strategy
 app.use(express.static("public"));
@@ -95,6 +102,13 @@ app.use(chatbotRoutes);
 app.use('/notifications', NotificationRouter);
 
 app.use("/recipe", RecipeRouter);
+
+
+app.get("/getUsers", getUsers);
+app.get('/getUserByEmail', getUserByEmail);
+app.use("/register",registerUserFace)
+
+
 
 // Configuration Swagger
 const swaggerOptions = {

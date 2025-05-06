@@ -147,6 +147,10 @@ exports.signup = asyncHandler(async (req, res) => {
   res.status(201).json({ user: savedUser, token });
 });
 
+
+
+
+
 // 🔹 Connexion
 exports.login = async (req, res) => {
   try {

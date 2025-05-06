@@ -8,6 +8,7 @@ const ProductSchema = new Schema(
       required: true,
       trim: true,
     },
+    
     description: {
       type: String,
       required: false,
@@ -32,6 +33,12 @@ const ProductSchema = new Schema(
     },
     image: {
       type: String,
+    },
+    nouveauPrix: { 
+      type: Number, default: null, min: [0, "Le nouveau prix doit être positif"] }, // Nouveau prix réduit
+    isPromo: {
+      type: Boolean,
+      default: false, // Par défaut, le produit n'est pas en promotion
     },
   },
   { timestamps: true }

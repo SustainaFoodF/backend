@@ -42,10 +42,17 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  promotionsSent: [
+    {
+      productId: { type: Schema.Types.ObjectId, ref: "products" }, // Référence au produit
+      dateSent: { type: Date, default: Date.now }, // Date d'envoi de l'email
+    },
+  ],
   resetToken:{
     type:String,
     default:null
   }
+  
   
 });
 

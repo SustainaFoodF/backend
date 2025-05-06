@@ -84,3 +84,33 @@ module.exports.sendWinElectionEMail = (email) => {
     })
     .catch((err) => console.log(err));
 };
+module.exports.sendPromoEmail = async (email, product) => {
+  if (!email || !product) {
+    console.error("Paramètres manquants pour l'envoi de l'email promo");
+    return;
+  }
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: `🔥 Promo -20% sur ${product.label}`,
+    html: `
+      <div>
+        <h1>🔥 PROMO SPÉCIALE -20% !</h1>
+        <p>Le produit <strong>${product.label}</strong> est en promotion !</p>
+        <p>Description : ${product.description || "Aucune description"}</p>
+        <p>Dépêche-toi ! L'offre expire le <strong>${new Date(
+          product.dateExp
+        ).toLocaleDateString()}</strong></p>
+      </div>
+    `,
+  };
+
+  try {
+    await module.exports.transporter.sendMail(mailOptions);
+    console.log("Email promo envoyé à :", email);
+  } catch (err) {
+    console.error("Erreur lors de l'envoi de l'email promo :", err.message);
+  }
+};
+
