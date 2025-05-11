@@ -1,3 +1,29 @@
+
+
+# SustainaFood – Backend
+
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+![VS Code](https://img.shields.io/badge/VS--Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white)
+![npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)
+![dotenv](https://img.shields.io/badge/dotenv-000000?style=for-the-badge&logo=github&logoColor=white)
+![axios](https://img.shields.io/badge/axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![jsonwebtoken](https://img.shields.io/badge/jsonwebtoken-black?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
+![Build](https://img.shields.io/github/actions/workflow/status/SustainaFoodF/backend/ci.yml?branch=main&style=for-the-badge)
+
+🌿 **Présentation**  
+Le backend de SustainaFood est une API RESTful développée avec Node.js et Express.js. Il gère les fonctionnalités essentielles de l'application, telles que :
+...
+
+
+
+
+
+
+
 SustainaFood – Backend
 🌿 Présentation
 Le backend de SustainaFood est une API RESTful développée avec Node.js et Express.js. Il gère les fonctionnalités essentielles de l'application, telles que :
