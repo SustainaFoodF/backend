@@ -13,9 +13,9 @@
 ![axios](https://img.shields.io/badge/axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
 ![jsonwebtoken](https://img.shields.io/badge/jsonwebtoken-black?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
 ![Build](https://img.shields.io/github/actions/workflow/status/SustainaFoodF/backend/ci.yml?branch=main&style=for-the-badge)
-## 🔐 Variables d’environnement
+## 🔐Environment variables
 
-Voici les principaux services utilisés dans le fichier `.env` :
+Here are the main services used in the `.env` file:
 
 ![PORT](https://img.shields.io/badge/Port-5001-blue?style=for-the-badge)
 ![JWT](https://img.shields.io/badge/JWT-Secret-black?style=for-the-badge&logo=jsonwebtokens)
@@ -27,66 +27,42 @@ Voici les principaux services utilisés dans le fichier `.env` :
 ![Gemini AI](https://img.shields.io/badge/Gemini-AI_API-4285F4?style=for-the-badge&logo=google)
 
 
-🌿 **Présentation**  
-Le backend de SustainaFood est une API RESTful développée avec Node.js et Express.js. Il gère les fonctionnalités essentielles de l'application, telles que :
-...
-
-
-
-
-
-
 
 SustainaFood – Backend
-🌿 Présentation
-Le backend de SustainaFood est une API RESTful développée avec Node.js et Express.js. Il gère les fonctionnalités essentielles de l'application, telles que :
+🌿PresentationThe
+backend of SustainaFood is a RESTful API developed with Node.js and Express.js. It manages the essential functionalities of the application, such as:- Management of food products- Analysis of ingredients through images- Nutritional information- Shopping cart management- User authentication- Integration with external services (e.g., nutritional APIs)
 
-Gestion des produits alimentaires
-
-Analyse des ingrédients via des images
-
-Informations nutritionnelles
-
-Gestion du panier d'achat
-
-Authentification des utilisateurs
-
-Intégration avec des services externes (par exemple, API nutritionnelles)
-
-📁 Structure du projet 
+📁Project structure
 backend/
-├── controllers/       # Logique métier pour chaque route
-├── models/            # Modèles de données (MongoDB/Mongoose)
-├── routes/            # Définition des routes de l'API
-├── services/          # Intégration avec des services externes
-├── uploads/           # Stockage des images téléchargées
-├── utils/             # Fonctions utilitaires
-├── .env               # Variables d'environnement
-├── app.js             # Point d'entrée principal de l'application
-├── package.json       # Dépendances et scripts
+├── controllers/      # Business logic for each route
+├── models/            #  Data models  (MongoDB/Mongoose)
+├── routes/            # Definition of the API routes
+├── services/          #Integration with external services
+├── uploads/           #Storage of uploaded images
+├── utils/             # Utility functions
+├── .env               #Environment variables
+├── app.js             # Main entry point of the application
+├── package.json      # Dependencies and scripts
 git clone https://github.com/SustainaFoodF/backend.git
 cd backend
-Installer les dépendances
-
+Install the dependencies
 bash
-Copier
-Modifier
+Copie
+update
 npm install
-Configurer les variables d'environnement
-
-Créez un fichier .env à la racine du projet avec les variables suivantes :
+Set up the environment variables
+Create a .env file at the root of the project with the following variables:
 
 env
 Copier
-Modifier
+update
 PORT=5001
 MONGODB_URI=mongodb://localhost:27017/sustainafood
 API_KEY=your_api_key_here
-Lancer le serveur
-
+Start the server
 bash
-Copier
-Modifier
+Copie
+update
 npm start
 Le serveur sera accessible à l'adresse http://localhost:5001.
 
@@ -101,8 +77,8 @@ Corps de la requête : multipart/form-data avec des fichiers image.
 Réponse :
 
 json
-Copier
-Modifier
+Copie
+update
 {
   "detectedIngredients": ["tomate", "poulet", "riz"]
 }
@@ -135,24 +111,23 @@ POST /auth/login
 GET /auth/profile
 
 🧪 Tests
-Les tests sont écrits à l'aide de Jest. Pour exécuter les tests :
-
+The tests are written using Jest. To run the tests:
 bash
 Copier
-Modifier
+update
 npm test
 📦 Dépendances principales
 express
 
 mongoose
 
-multer – pour la gestion des fichiers
+Multer – for file management
 
-axios – pour les appels aux API externes
+axios – for external API calls
 
-jsonwebtoken – pour l'authentification
+JSONWebToken – for authentication
 
-dotenv – pour la gestion des variables d'environnement
+dotenv – for managing environment variables
 
-📄 Licence
-Ce projet est sous licence MIT.
+📄 License
+This project is licensed under MIT License.
