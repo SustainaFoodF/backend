@@ -13,6 +13,19 @@
 ![axios](https://img.shields.io/badge/axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
 ![jsonwebtoken](https://img.shields.io/badge/jsonwebtoken-black?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
 ![Build](https://img.shields.io/github/actions/workflow/status/SustainaFoodF/backend/ci.yml?branch=main&style=for-the-badge)
+## 🔐 Variables d’environnement
+
+Voici les principaux services utilisés dans le fichier `.env` :
+
+![PORT](https://img.shields.io/badge/Port-5001-blue?style=for-the-badge)
+![JWT](https://img.shields.io/badge/JWT-Secret-black?style=for-the-badge&logo=jsonwebtokens)
+![MongoDB](https://img.shields.io/badge/MongoDB-Database-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+![Gmail](https://img.shields.io/badge/Gmail-Auth-red?style=for-the-badge&logo=gmail&logoColor=white)
+![Google OAuth](https://img.shields.io/badge/Google-OAuth2-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![Spoonacular API](https://img.shields.io/badge/Spoonacular-API-green?style=for-the-badge)
+![Clarifai](https://img.shields.io/badge/Clarifai-Image_API-blueviolet?style=for-the-badge)
+![Gemini AI](https://img.shields.io/badge/Gemini-AI_API-4285F4?style=for-the-badge&logo=google)
+
 
 🌿 **Présentation**  
 Le backend de SustainaFood est une API RESTful développée avec Node.js et Express.js. Il gère les fonctionnalités essentielles de l'application, telles que :
