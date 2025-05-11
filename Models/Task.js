@@ -52,6 +52,10 @@ const TaskSchema = new Schema({
   distance: {
     type: Number, // in kilometers
     required: true
+  }  ,
+  relatedCommand: {
+    type: Schema.Types.ObjectId,
+    ref: 'Commands' // Command model name
   }
 }, { timestamps: true });
 

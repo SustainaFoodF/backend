@@ -5,7 +5,8 @@ const {
   getTaskById,
   updateTaskStatus,
   reportTaskIssue,
-  createTask, // Add createTask
+  createTask,
+  getBusinessTasks
 } = require("../Controllers/taskController");
 const verifyToken = require("../Middlewares/Auth");
 const { upload } = require("../Middlewares/uploadMiddleware");
@@ -29,5 +30,7 @@ router.post(
   upload.single("image"),
   reportTaskIssue
 );
+// Get tasks for a specific business
+router.get("/business/:businessId", verifyToken, getBusinessTasks);
 
 module.exports = router;

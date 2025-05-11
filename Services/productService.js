@@ -15,3 +15,24 @@ module.exports.getAllExpiredProducts = async (lteDate, greaterThenDate) => {
     },
   });
 };
+
+module.exports.getProductReviews = async (productId) => {
+  return await Product.findById(productId)
+    .populate('reviews.user', 'username')
+    .select('reviews averageRating');
+};
+
+module.exports.addProductReview = async (productId, userId, rating, comment) => {
+  const product = await Product.findById(productId);
+  if (!product) throw new Error('Product not found');
+
+  const review = {
+    user: userId,
+    rating,
+    comment
+  };
+
+  product.reviews.push(review);
+  await product.save();
+  return product;
+};

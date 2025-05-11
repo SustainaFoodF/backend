@@ -36,7 +36,40 @@ exports.getLivreurTasks = async (req, res) => {
     });
   }
 };
+// Get tasks for a specific business
 
+exports.getBusinessTasks = async (req, res) => {
+  try {
+    const businessId = req.params.businessId;
+    
+    // Validate the business ID
+    if (!ObjectId.isValid(businessId)) {
+      return res.status(400).json({ message: "Invalid business ID format" });
+    }
+    
+    // Check if the requesting user is either the business owner or an admin
+    if (req.user.role !== "admin" && req.user._id.toString() !== businessId) {
+      return res.status(403).json({ message: "Not authorized to access these tasks" });
+    }
+    
+    const tasks = await Task.find({ createdBy: businessId })
+      .sort({ createdAt: -1 }) // Sort by newest first
+      .select("-__v");
+    
+    res.status(200).json({
+      success: true,
+      count: tasks.length,
+      data: tasks
+    });
+  } catch (error) {
+    console.error("Error fetching business tasks:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message
+    });
+  }
+};
 // Get a specific task by ID
 exports.getTaskById = async (req, res) => {
   try {

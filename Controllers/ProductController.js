@@ -215,3 +215,84 @@ exports.getRecipes = async (req, res) => {
       .json({ error: "An error occurred while processing the images" });
   }
 };
+
+
+// Ajouter un avis à un produit
+exports.addReview = async (req, res) => {
+  try {
+    const { rating } = req.body; // On ne prend plus que le rating
+    const productId = req.params.id;
+    const userId = req.user._id;
+
+    const product = await Product.findById(productId);
+    const existingReviewIndex = product.reviews.findIndex(
+      review => review.user.toString() === userId.toString()
+    );
+
+    const review = {
+      user: userId,
+      rating // Pas de commentaire
+    };
+
+    if (existingReviewIndex >= 0) {
+      product.reviews[existingReviewIndex] = review;
+    } else {
+      product.reviews.push(review);
+    }
+
+    await product.save();
+    res.status(201).json(product);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Obtenir tous les avis d'un produit
+exports.getProductReviews = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id)
+      .populate('reviews.user', 'username') // Adaptez selon vos champs utilisateur
+      .select('reviews averageRating');
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json({
+      reviews: product.reviews,
+      averageRating: product.averageRating
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Supprimer un avis
+exports.deleteReview = async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    const reviewId = req.params.reviewId;
+    const userId = req.user._id;
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Vérifier que l'utilisateur est bien l'auteur de l'avis
+    const reviewIndex = product.reviews.findIndex(
+      review => review._id.toString() === reviewId && review.user.toString() === userId.toString()
+    );
+
+    if (reviewIndex === -1) {
+      return res.status(404).json({ message: "Review not found or unauthorized" });
+    }
+
+    product.reviews.splice(reviewIndex, 1);
+    await product.save();
+
+    res.status(200).json({ message: "Review deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

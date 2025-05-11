@@ -1,5 +1,7 @@
 const CommandModel = require("../Models/Command");
 const User = require("../Models/User"); //
+const Task = require("../Models/Task"); 
+const Notification = require("../Models/Notification");
 const { updateProductQuantity } = require("../Services/productService");
 const { sendOrderConfirmationEmail } = require("../Services/emailService");
 
@@ -57,27 +59,70 @@ exports.createCommand = async (req, res) => {
 exports.assignDeliverer = async (req, res) => {
   try {
     const { commandId, delivererId } = req.body;
- 
-    // Vérifier que la commande existe
-    const command = await CommandModel.findById(commandId);
+    
+    // 1. Update the command
+    const command = await CommandModel.findByIdAndUpdate(
+      commandId,
+      { livreur: delivererId },
+      { new: true }
+    ).populate('owner products.product');
+
     if (!command) {
-      return res.status(404).json({ message: "Commande non trouvée" });
+      return res.status(404).json({ message: "Command not found" });
     }
- 
-    // Vérifier que le livreur existe
-    const deliverer = await UserModel.findById(delivererId);
-    if (!deliverer || deliverer.role !== "livreur") {
-      return res.status(404).json({ message: "Livreur non trouvé" });
-    }
- 
-    // Affecter le livreur à la commande
-    command.livreur = delivererId;
-    await command.save();
- 
-    res.status(200).json({ message: "Livreur affecté avec succès", command });
+
+    // 2. Create corresponding task
+    const taskData = {
+      pickup: {
+        businessName: command.products[0]?.product?.owner?.name || "Our Store",
+        address: command.location,
+        contactPerson: "Store Manager",
+        contactPhone: command.phoneNumber,
+        pickupTime: new Date()
+      },
+      dropoff: {
+        clientName: command.owner.name,
+        address: command.owner.addresses[0]?.street || "Unknown",
+        contactPhone: command.phoneNumber,
+        deliveryInstructions: command.owner.addresses[0]?.deliveryNotes || ""
+      },
+      details: {
+        orderItems: command.products.map(p => ({
+          name: p.product.label,
+          quantity: p.quantity
+        })),
+        totalValue: command.totalPrice,
+        paymentMethod: command.isPaid ? "Prepaid" : "Cash on Delivery"
+      },
+      assignedTo: delivererId,
+      createdBy: req.user._id,
+      estimatedDeliveryTime: command.dateLivraison,
+      distance: 5 // TODO: Calculate actual distance
+    };
+
+    const task = await Task.create(taskData);
+
+    // 3. Create notification
+    await Notification.create({
+      recipient: delivererId,
+      type: 'Task Assignment',
+      title: 'New Delivery Task',
+      message: `You've been assigned to deliver order #${command._id.toString().slice(-6)}`,
+      relatedTask: task._id
+    });
+
+    res.status(200).json({
+      message: "Deliverer assigned and task created",
+      command,
+      task
+    });
+
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Erreur lors de l'affectation du livreur", message: err.message });
+    console.error("Error:", err);
+    res.status(500).json({ 
+      error: "Assignment failed",
+      message: err.message 
+    });
   }
 };
 
@@ -107,60 +152,58 @@ exports.getAll = async (req, res) => {
   res.status(200).json(commands);
 };
 exports.getCommandsByUser = async (req, res) => {
-  const user = req.user; // assuming the user is attached to the request object
+  const user = req.user;
   try {
     if (user.role === "client") {
-      // Get all commands for the client (based on `owner`)
+      // Client logic (unchanged, works fine)
       const commands = await CommandModel.find({ owner: user._id }).populate({
         path: "products.product",
         populate: {
-          path: "owner", // Get owner details for each product
+          path: "owner",
           model: "users",
         },
       });
-
       return res.status(200).json(commands);
+      
     } else if (user.role === "business") {
-      // For business role, we filter out only the products owned by the business
-      const commands = await CommandModel.find()
+      // Improved business logic
+      const allCommands = await CommandModel.find()
         .populate({
           path: "products.product",
           populate: {
             path: "owner",
             model: "users",
-          },
+            select: "_id" // Only get the _id for owner to reduce data
+          }
         })
         .populate("owner", "name");
-      /*commands = commands.filter((e) =>
-        e.products.some((p) => p.owner._id.toString() === user._id)
-      );*/
-      const filtered = commands
-        .filter((command) =>
-          command.products.some(
-            (product) =>
-              //product.product.owner._id.toString() === user._id.toString()
-            product.product &&
-product.product.owner &&
-product.product.owner._id.toString() === user._id.toString()
 
+      // Safely filter commands that have at least one product owned by the business
+      const filteredCommands = allCommands
+        .map(command => command.toObject()) // Convert to plain objects
+        .filter(command => 
+          command.products.some(product => 
+            product?.product?.owner?._id?.toString() === user._id.toString()
           )
         )
-        .map((command) => ({
-          ...command.toObject(), // Convert Mongoose document to plain object
-          products: command.products.filter(
-            (product) =>
-              product.product.owner._id.toString() === user._id.toString()
-          ),
+        .map(command => ({
+          ...command,
+          products: command.products.filter(product => 
+            product?.product?.owner?._id?.toString() === user._id.toString()
+          )
         }));
 
-      // You may want to filter out commands where no products belong to the business
-
-      return res.status(200).json(filtered);
+      return res.status(200).json(filteredCommands);
+      
     } else {
       return res.status(403).json({ message: "Unauthorized role" });
     }
   } catch (error) {
     console.error("Error fetching commands:", error);
-    return res.status(500).json({ message: "Server error", error });
+    return res.status(500).json({ 
+      message: "Server error",
+      error: error.message,
+      stack: error.stack // Include stack trace for debugging
+    });
   }
 };
