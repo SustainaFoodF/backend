@@ -32,7 +32,12 @@ SustainaFood – Backend
 🌿PresentationThe
 backend of SustainaFood is a RESTful API developed with Node.js and Express.js. It manages the essential functionalities of the application, such as:- Management of food products- Analysis of ingredients through images- Nutritional information- Shopping cart management- User authentication- Integration with external services (e.g., nutritional APIs)
 
+
+
+
 📁Project structure
+
+
 backend/
 ├── controllers/      # Business logic for each route
 ├── models/            #  Data models  (MongoDB/Mongoose)
@@ -43,6 +48,10 @@ backend/
 ├── .env               #Environment variables
 ├── app.js             # Main entry point of the application
 ├── package.json      # Dependencies and scripts
+
+
+
+
 git clone https://github.com/SustainaFoodF/backend.git
 cd backend
 Install the dependencies
