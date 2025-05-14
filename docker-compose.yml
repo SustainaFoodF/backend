@@ -15,7 +15,7 @@ services:
 
   app:
     build: .
-    image: 192.168.33.10:8083/nodemongoapp:6.0
+    image: 192.168.33.15:8083/nodemongoapp:6.0
     container_name: back
     restart: always
     ports:
