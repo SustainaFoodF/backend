@@ -46,7 +46,6 @@ pipeline {
             steps {
                 script {
                     sh 'docker-compose build'
-                    sh 'docker tag 192.168.33.10:8083/nodemongoapp:6.0 $registry/nodemongoapp:6.0'
                 }
             }
         }
@@ -56,18 +55,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("http://${registry}", registryCredentials) {
-                        sh 'docker push $registry/nodemongoapp:6.0'
-                    }
-                }
-            }
-        }
-
-        stage('Run application') {
-            steps {
-                script {
-                    docker.withRegistry("http://${registry}", registryCredentials) {
-                        sh 'docker pull $registry/nodemongoapp:6.0'
-                        sh 'docker-compose up -d'
+                        sh 'docker push $registry/nodemongoapp:5.0'
                     }
                 }
             }
