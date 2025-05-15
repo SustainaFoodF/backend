@@ -1,9 +1,10 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js","scripts": {
+  "main": "index.js",
+  "scripts": {
   "start": "node index.js",
-  "postinstall": "if [ \"$OSTYPE\" = \"linux-gnu\" ]; then find node_modules/mongoose/lib -type f -exec sed -i 's/require(\\\".\\/bulkWriteResult\\\")/require(\\\".\\/BulkWriteResult\\\")/g' {} +; fi"
+  "postinstall": "node ./fix-mongoose.js"
 },
   "engines": {
     "node": "20.x"
