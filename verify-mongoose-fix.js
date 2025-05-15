@@ -1,18 +1,32 @@
 // verify-mongoose-fix.js
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 
-const targetFile = path.join('node_modules', 'mongoose', 'lib', 'drivers', 'node-mongodb-native', 'index.js');
+const CHECKS = [
+  { file: 'node_modules/mongoose/lib/collection.js', pattern: /require\(['"]\.\/connectionstate['"]\)/ },
+  { file: 'node_modules/mongoose/lib/drivers/node-mongodb-native/index.js', pattern: /require\(['"]\.\/bulkWriteResult['"]\)/ }
+];
 
-if (!fs.existsSync(targetFile)) {
-  console.error('Mongoose files not found!');
+let allChecksPassed = true;
+
+CHECKS.forEach(({file, pattern}) => {
+  if (fs.existsSync(file)) {
+    const content = fs.readFileSync(file, 'utf8');
+    if (content.match(pattern)) {
+      console.error(`FAIL: Found unresolved case sensitivity in ${file}`);
+      allChecksPassed = false;
+    } else {
+      console.log(`PASS: ${file} looks good`);
+    }
+  } else {
+    console.error(`ERROR: File not found - ${file}`);
+    allChecksPassed = false;
+  }
+});
+
+if (!allChecksPassed) {
+  console.error('Mongoose fixes verification failed!');
   process.exit(1);
 }
 
-const content = fs.readFileSync(targetFile, 'utf8');
-if (content.includes('require("./bulkWriteResult")')) {
-  console.error('Mongoose fix was not properly applied!');
-  process.exit(1);
-}
-
-console.log('Mongoose fix verified successfully');
+console.log('All Mongoose case sensitivity fixes verified successfully');

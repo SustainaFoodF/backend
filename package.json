@@ -5,7 +5,8 @@
  "scripts": {
   "start": "node index.js",
   "prestart": "node ./verify-mongoose-fix.js",
-  "postinstall": "node ./fix-mongoose-completely.js"
+  "postinstall": "node ./fix-mongoose-completely.js",
+  "fix-mongoose": "node ./fix-mongoose-completely.js"
 },
   "engines": {
     "node": "20.x"

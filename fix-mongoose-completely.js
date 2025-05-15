@@ -2,26 +2,54 @@
 const fs = require('fs');
 const path = require('path');
 
-function fixFile(filePath) {
-  const content = fs.readFileSync(filePath, 'utf8');
-  const fixed = content
-    .replace(/require\("\.\/bulkWriteResult"\)/g, 'require("./BulkWriteResult")')
-    .replace(/require\('\.\/bulkWriteResult'\)/g, "require('./BulkWriteResult')");
-  fs.writeFileSync(filePath, fixed);
-}
-
-const filesToFix = [
-  path.join('node_modules', 'mongoose', 'lib', 'drivers', 'node-mongodb-native', 'index.js'),
-  path.join('node_modules', 'mongoose', 'lib', 'drivers', 'node-mongodb-native', 'collection.js')
+const FIXES = [
+  { from: /require\("\.\/bulkWriteResult"\)/g, to: 'require("./BulkWriteResult")' },
+  { from: /require\("\.\/connectionstate"\)/g, to: 'require("./connectionState")' },
+  { from: /require\('\.\/bulkWriteResult'\)/g, to: "require('./BulkWriteResult')" },
+  { from: /require\('\.\/connectionstate'\)/g, to: "require('./connectionState')" }
 ];
 
-filesToFix.forEach(file => {
+function fixFile(filePath) {
+  try {
+    let content = fs.readFileSync(filePath, 'utf8');
+    let modified = false;
+    
+    FIXES.forEach(({from, to}) => {
+      if (content.match(from)) {
+        content = content.replace(from, to);
+        modified = true;
+      }
+    });
+
+    if (modified) {
+      fs.writeFileSync(filePath, content);
+      console.log(`Fixed ${path.relative(process.cwd(), filePath)}`);
+      return true;
+    }
+  } catch (err) {
+    console.error(`Error fixing ${filePath}:`, err.message);
+  }
+  return false;
+}
+
+const FILES_TO_CHECK = [
+  'node_modules/mongoose/lib/collection.js',
+  'node_modules/mongoose/lib/drivers/node-mongodb-native/index.js',
+  'node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js',
+  'node_modules/mongoose/lib/index.js'
+];
+
+let fixesApplied = 0;
+FILES_TO_CHECK.forEach(file => {
   if (fs.existsSync(file)) {
-    fixFile(file);
-    console.log(`Fixed ${file}`);
+    if (fixFile(file)) fixesApplied++;
   } else {
-    console.error(`File not found: ${file}`);
+    console.warn(`File not found: ${file}`);
   }
 });
 
-console.log('Mongoose completely fixed');
+console.log(`Applied ${fixesApplied} fixes to Mongoose files`);
+if (fixesApplied === 0) {
+  console.error('No fixes were applied - please check Mongoose version');
+  process.exit(1);
+}
