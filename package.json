@@ -2,9 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
+ "scripts": {
   "start": "node index.js",
-  "postinstall": "node ./fix-mongoose.js"
+  "prestart": "node ./verify-mongoose-fix.js",
+  "postinstall": "node ./fix-mongoose-completely.js"
 },
   "engines": {
     "node": "20.x"
